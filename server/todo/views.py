@@ -2,10 +2,9 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import *
-from .models import EmailConfirmationModel
 
 
 class TodoList(ListAPIView):
@@ -39,11 +38,7 @@ class RegisterUser(CreateAPIView):
                 email=serializer.validated_data['email'],
                 password=serializer.validated_data['password']
             )
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'message': 'User registration successfully'})
+            return Response({'message': 'User registration successfully'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -55,28 +50,12 @@ class LoginUser(CreateAPIView):
         if serializer.is_valid():
             user = CustomUser.objects.get(email=serializer.data['email'])
             refresh = RefreshToken.for_user(user)
-
-            return Response({
+            token = {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
+            }
+            return Response({
+                'token': token,
                 'email': user.email
             })
         return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-
-class UserInformationAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        email = request.email
-        is_email_confirmed = user.email_confirmed
-        return Response({'email': email, 'is_email_confirmed': is_email_confirmed}, status.HTTP_200_OK)
-
-
-class SentEmailConfirmationTokenAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        user = request.user
-        token = EmailConfirmationModel.objects.create(user=user)

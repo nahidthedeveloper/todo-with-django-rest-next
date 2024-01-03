@@ -2,8 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import Head from 'next/head'
 import {useForm} from "react-hook-form"
-import axios from "axios";
-import {objectToArray} from "@/utils";
+import {signIn} from "next-auth/react";
 
 const Index = () => {
     const {
@@ -15,23 +14,29 @@ const Index = () => {
         mode: "onTouched"
     })
 
-    const loginForm = (loginData) => {
-        axios.post("http://127.0.0.1:8000/login/", {...loginData})
-            .then((response) => {
-                console.log(response)
-            }).catch(err => {
-            const {data} = err.response
-            if (data) {
-                // TODO -> HANDLE NON FIELD ERRORS
-                const formattedData = objectToArray(data)
-                formattedData.map(el => {
-                    setError(el.name, {
-                        type: 'custom',
-                        message: el.message[0]
-                    })
-                })
-            }
+    const loginForm = async (loginData) => {
+        await signIn("credentials", {
+            email: loginData?.email,
+            password: loginData?.password,
+            redirect: false
         })
+
+        // axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}login/`, {...loginData})
+        //     .then((response) => {
+        //         console.log(response)
+        //     }).catch(err => {
+        //     const {data} = err.response
+        //     if (data) {
+        //         // TODO -> HANDLE NON FIELD ERRORS
+        //         const formattedData = objectToArray(data)
+        //         formattedData.map(el => {
+        //             setError(el.name, {
+        //                 type: 'custom',
+        //                 message: el.message[0]
+        //             })
+        //         })
+        //     }
+        // })
     }
 
     return (

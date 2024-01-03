@@ -17,7 +17,7 @@ const Index = () => {
     })
 
     const SignupForm = (signupData) => {
-        axios.post("http://127.0.0.1:8000/signup/", {...signupData})
+        axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}signup/`, {...signupData})
             .then((response) => {
                 console.log(response)
             }).catch(err => {
