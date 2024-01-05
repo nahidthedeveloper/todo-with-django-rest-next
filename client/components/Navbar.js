@@ -1,10 +1,15 @@
+'use client'
 import React from 'react';
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
+import { signOut, useSession } from "next-auth/react";
+import axios from "axios";
 
 const Navbar = () => {
     const router = useRouter()
+    const { data: session } = useSession()
+
     const active = "block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
     const normal = "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
     const navData = [
@@ -23,36 +28,21 @@ const Navbar = () => {
             "url": "/contact",
             "name": "Contact"
         },
-        {
-            "id": 4,
-            "url": "/login",
-            "name": "Login"
-        },
-        {
-            "id": 5,
-            "url": "/signup",
-            "name": "Signup"
-        },
-        {
-            "id": 6,
-            "url": "/profile",
-            "name": "Profile"
-        },
     ]
     return (
         <nav className="border-gray-200 my-6">
             <div className="flex flex-wrap items-center justify-between">
                 <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse text-2xl">
-                   Todo App
+                    Todo App
                 </Link>
                 <button data-collapse-toggle="navbar-default" type="button"
-                        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                        aria-controls="navbar-default" aria-expanded="false">
+                    className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                    aria-controls="navbar-default" aria-expanded="false">
                     <span className="sr-only">Open main menu</span>
                     <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                         viewBox="0 0 17 14">
+                        viewBox="0 0 17 14">
                         <path stroke="currentColor"
-                              d="M1 1h15M1 7h15M1 13h15"/>
+                            d="M1 1h15M1 7h15M1 13h15" />
                     </svg>
                 </button>
                 <div className="hidden w-full md:block md:w-auto" id="navbar-default">
@@ -68,8 +58,37 @@ const Navbar = () => {
                             </li>
                         ))}
                         <li>
-                            <ThemeToggle/>
+                            <ThemeToggle />
                         </li>
+                        {session && (
+                            <li>
+                                <Link
+                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                    href="/profile">Profile</Link>
+                            </li>
+                        )}
+                        {session && (
+                            <li>
+                                <button
+                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                    onClick={() => signOut()}>Logout
+                                </button>
+                            </li>
+                        )}
+                        {!session && (
+                            <li>
+                                <Link
+                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                    href="/signup">Signup</Link>
+                            </li>
+                        )}
+                        {!session && (
+                            <li>
+                                <Link
+                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                    href="/login">Login</Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </div>

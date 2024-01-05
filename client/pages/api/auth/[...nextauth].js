@@ -1,58 +1,55 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import axios from "axios";
+import { objectToArray } from "@/utils";
+import { httpClient } from '@/utils/api';
 
 export default NextAuth({
     providers: [
         CredentialsProvider({
             name: 'credentials',
             credentials: {},
-            async authorize({email, password}, req) {
+            async authorize({ email, password }) {
                 const payload = {
                     email,
                     password,
                 };
-
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}login/`, {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    headers: {
-                        'Content-Type': 'application/json',
+                try {
+                    const { data } = await httpClient.post(
+                        `/login/`,
+                        payload
+                    )
+                    return data
+                } catch (error) {
+                    if ('response' in error) {
+                        const { data: errors } = error.response
+                        const formattedData = objectToArray(errors)
+                        throw new Error(JSON.stringify(formattedData))
                     }
-                });
-                const user = await res.json();
-                if (!res.ok) {
-                    throw new Error(user.message);
                 }
-                if (res.ok && user) {
-
-                    return user;
-                }
-                return null;
             }
         })
     ],
-    // secret: process.env.,
-    pages: {
-        signIn: '/auth/login',
-    },
     callbacks: {
-        async jwt({token, user}) {
-            // console.log(user)
+        async jwt({ token, user }) {
             if (user) {
                 return {
                     ...token,
-                    accessToken: user.token.access,
-                    refreshToken: user.token.refresh,
+                    accessToken: user?.token.access,
+                    refreshToken: user?.token.refresh,
                 };
             }
             return token;
         },
-
-        async session({session, token}) {
-            console.log(token)
-                session.user.accessToken = token.accessToken
-                session.user.refreshToken = token.refreshToken
+        async session({ session, token }) {
+            session.user.accessToken = token?.accessToken
+            session.user.refreshToken = token?.refreshToken
             return session;
         },
     },
+    pages: {
+        signIn: '/login',
+        error: '/login'
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 });

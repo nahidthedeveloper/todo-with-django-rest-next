@@ -1,21 +1,38 @@
 'use client'
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Head from "next/head";
-import {useSession} from "next-auth/react";
+import { httpClient } from '@/utils/api';
+import { TokenContext } from '@/context/tokenContext';
 
 const Index = () => {
-    const session = useSession()
+    const tokenStatus = useContext(TokenContext)
 
-    console.log(session)
+    const [user, setUser] = useState(null)
+
+    useEffect(() => {
+        if (tokenStatus === 'added') {
+            httpClient.get('/profile/')
+                .then(res => {
+                    setUser(res.data[0]);
+                }).catch(err => {
+                    console.log(err);
+                })
+        }
+    }, [tokenStatus])
+
     return (
         <>
             <Head>
                 <title>Todo | Profile</title>
             </Head>
-
-            <div>
-
-                this is profile page
+            <div className='w-full flex justify-center'>
+                {user && (
+                    <div>
+                        <p>Hi, {user.email}</p>
+                        <p>You join this todo app at - {user.date_joined}</p>
+                        <p>You are last login at - {user.last_login}</p>
+                    </div>
+                )}
             </div>
         </>
     );

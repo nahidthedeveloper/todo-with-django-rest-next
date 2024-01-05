@@ -1,38 +1,58 @@
+'use client'
 import React from 'react';
 import Link from "next/link";
 import Head from "next/head";
-import {useForm} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import axios from "axios";
-import {objectToArray} from "@/utils";
+import { objectToArray } from "@/utils";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { getSession } from "next-auth/react";
+import { httpClient } from '@/utils/api';
+import { useRouter } from 'next/router';
 
 const Index = () => {
+    const router = useRouter()
     const {
         register,
         handleSubmit,
-        formState: {errors},
+        formState: { errors },
         getValues,
-        setError
+        setError,
+        reset
     } = useForm({
         mode: "onTouched"
     })
 
     const SignupForm = (signupData) => {
-        axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}signup/`, {...signupData})
+        httpClient.post(`/signup/`, { ...signupData })
             .then((response) => {
-                console.log(response)
+                toast.success(response.data.message, {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+
+                reset()
+
             }).catch(err => {
-            const {data} = err.response
-            if (data) {
-                // TODO -> HANDLE NON FIELD ERRORS
-                const formattedData = objectToArray(data)
-                formattedData.map(el => {
-                    setError(el.name, {
-                        type: 'custom',
-                        message: el.message[0]
+                const { data } = err.response
+                if (data) {
+                    // TODO -> HANDLE NON FIELD ERRORS
+                    const formattedData = objectToArray(data)
+                    formattedData.map(el => {
+                        setError(el.name, {
+                            type: 'custom',
+                            message: el.message[0]
+                        })
                     })
-                })
-            }
-        })
+                }
+            })
     }
 
     return (
@@ -40,7 +60,7 @@ const Index = () => {
             <Head>
                 <title>Todo | Signup</title>
             </Head>
-
+            <ToastContainer />
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-[70vh] lg:py-0">
                 <div
                     className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -83,7 +103,7 @@ const Index = () => {
                                     id="password"
                                     placeholder="••••••••"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    {...register("password", {required: 'Password is required'})}
+                                    {...register("password", { required: 'Password is required' })}
                                 />
                                 <p className={'text-red-400 pl-1 pt-2 text-sm'}>{errors.password?.message}</p>
                             </div>
@@ -101,7 +121,7 @@ const Index = () => {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     {...register("confirm_password", {
                                         required: 'Confirm password is required', validate: (value) => {
-                                            const {password} = getValues();
+                                            const { password } = getValues();
                                             return password === value || "Passwords should match!";
                                         }
                                     })}

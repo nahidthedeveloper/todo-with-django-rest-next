@@ -1,4 +1,3 @@
-import {useTheme} from 'next-themes'
 import ThemeToggle from "@/components/ThemeToggle.js";
 import Navbar from "@/components/Navbar";
 import Head from "next/head";

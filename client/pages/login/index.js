@@ -1,42 +1,69 @@
 import React from 'react';
 import Link from "next/link";
 import Head from 'next/head'
-import {useForm} from "react-hook-form"
-import {signIn} from "next-auth/react";
+import { useForm } from "react-hook-form"
+import { getSession, signIn } from "next-auth/react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 
 const Index = () => {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get('callbackUrl')
+
     const {
         register,
         handleSubmit,
-        formState: {errors},
+        formState: { errors },
         setError,
     } = useForm({
         mode: "onTouched"
     })
+    console.log()
 
-    const loginForm = async (loginData) => {
-        await signIn("credentials", {
+    const loginForm = (loginData) => {
+        signIn("credentials", {
             email: loginData?.email,
             password: loginData?.password,
             redirect: false
+        }).then((response) => {
+            if (response?.error) {
+                try {
+                    const errors = JSON.parse(response.error)
+                    errors.map((e) => {
+                        return setError(e.name, {
+                            type: 'manual',
+                            message: e.message[0],
+                        })
+                    })
+                } catch (error) {
+                    toast.error('Internal server error!', {
+                        position: "top-center",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                }
+            } else {
+                toast.success('Login Successful', {
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                });
+                router.push(callbackUrl ?? '/profile')
+            }
         })
-
-        // axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}login/`, {...loginData})
-        //     .then((response) => {
-        //         console.log(response)
-        //     }).catch(err => {
-        //     const {data} = err.response
-        //     if (data) {
-        //         // TODO -> HANDLE NON FIELD ERRORS
-        //         const formattedData = objectToArray(data)
-        //         formattedData.map(el => {
-        //             setError(el.name, {
-        //                 type: 'custom',
-        //                 message: el.message[0]
-        //             })
-        //         })
-        //     }
-        // })
     }
 
     return (
@@ -44,6 +71,7 @@ const Index = () => {
             <Head>
                 <title>Todo | Login</title>
             </Head>
+            <ToastContainer />
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-[70vh] lg:py-0">
                 <div
                     className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -86,7 +114,7 @@ const Index = () => {
                                     id="password"
                                     placeholder="••••••••"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    {...register("password", {required: 'Password is required'})}
+                                    {...register("password", { required: 'Password is required' })}
                                 />
                                 <p className={'text-red-400 pl-1 pt-2 text-sm'}> {errors.password?.message} </p>
                             </div>
@@ -96,7 +124,7 @@ const Index = () => {
                                 </Link>
                             </div>
                             <button type="submit"
-                                    className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+                                className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
                             >
                                 Sign in
                             </button>
