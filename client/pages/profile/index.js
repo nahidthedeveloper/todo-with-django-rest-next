@@ -23,7 +23,7 @@ const Index = () => {
     return (
         <>
             <Head>
-                <title>Todo | Profile</title>
+                <title>Todo | {user?.email}</title>
             </Head>
             <div className='w-full flex justify-center'>
                 {user && (

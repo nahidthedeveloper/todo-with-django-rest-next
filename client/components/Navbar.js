@@ -1,34 +1,31 @@
 'use client'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useRouter } from "next/router";
 import { signOut, useSession } from "next-auth/react";
-import axios from "axios";
 
 const Navbar = () => {
     const router = useRouter()
-    const { data: session } = useSession()
+    const { status } = useSession()
 
     const active = "block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
     const normal = "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
     const navData = [
         {
-            "id": 1,
             "url": "/",
             "name": "Home"
         },
         {
-            "id": 2,
             "url": "/about",
             "name": "About"
         },
         {
-            "id": 3,
             "url": "/contact",
             "name": "Contact"
         },
     ]
+
     return (
         <nav className="border-gray-200 my-6">
             <div className="flex flex-wrap items-center justify-between">
@@ -45,55 +42,67 @@ const Navbar = () => {
                             d="M1 1h15M1 7h15M1 13h15" />
                     </svg>
                 </button>
+
                 <div className="hidden w-full md:block md:w-auto" id="navbar-default">
-                    <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                        {navData.map((item) => (
-                            <li key={item.id}>
-                                <Link
-                                    className={`${router.pathname === item.url ? active : normal}`}
-                                    href={item.url}
-                                >
-                                    {item.name}
-                                </Link>
+                    {status !== 'loading' &&
+                        <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                            {navData.map((item, index) => (
+                                <li key={index}>
+                                    <Link
+                                        className={`${router.pathname === item.url ? active : normal}`}
+                                        href={item.url}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                            {status === 'authenticated' && (
+                                <li>
+                                    <Link
+                                        className={`${router.pathname === '/todos' ? active : normal}`}
+                                        href='/todos'
+                                    >
+                                        Todo
+                                    </Link>
+                                </li>
+                            )}
+                            <li className='mb-5 md:mb-0'>
+                                <ThemeToggle />
                             </li>
-                        ))}
-                        <li>
-                            <ThemeToggle />
-                        </li>
-                        {session && (
-                            <li>
-                                <Link
-                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
-                                    href="/profile">Profile</Link>
-                            </li>
-                        )}
-                        {session && (
-                            <li>
-                                <button
-                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
-                                    onClick={() => signOut()}>Logout
-                                </button>
-                            </li>
-                        )}
-                        {!session && (
-                            <li>
-                                <Link
-                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
-                                    href="/signup">Signup</Link>
-                            </li>
-                        )}
-                        {!session && (
-                            <li>
-                                <Link
-                                    className="px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
-                                    href="/login">Login</Link>
-                            </li>
-                        )}
-                    </ul>
+                            {status === 'authenticated' && (
+                                <li>
+                                    <Link
+                                        className="mt-4 md:mt-0 px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                        href="/profile">Profile</Link>
+                                </li>
+                            )}
+                            {status === 'authenticated' && (
+                                <li>
+                                    <button
+                                        className="mt-4 md:mt-0 px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                        onClick={() => signOut()}>Logout
+                                    </button>
+                                </li>
+                            )}
+                            {status === 'unauthenticated' && (
+                                <li>
+                                    <Link
+                                        className="mt-4 md:mt-0 px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                        href="/signup">Signup</Link>
+                                </li>
+                            )}
+                            {status === 'unauthenticated' && (
+                                <li>
+                                    <Link
+                                        className="mt-4 md:mt-0 px-3 py-2 text-white dark:text-black leading-loose text-xs text-center font-semibold leading-none bg-black dark:bg-gray-50 dark:hover:bg-gray-100 rounded-xl"
+                                        href="/login">Login</Link>
+                                </li>
+                            )}
+                        </ul>
+                    }
                 </div>
             </div>
         </nav>
-
     );
 };
 

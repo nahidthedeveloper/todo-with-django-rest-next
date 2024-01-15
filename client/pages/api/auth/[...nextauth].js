@@ -36,14 +36,12 @@ export default NextAuth({
                 return {
                     ...token,
                     accessToken: user?.token.access,
-                    refreshToken: user?.token.refresh,
                 };
             }
             return token;
         },
         async session({ session, token }) {
             session.user.accessToken = token?.accessToken
-            session.user.refreshToken = token?.refreshToken
             return session;
         },
     },

@@ -1,8 +1,9 @@
-import React from 'react';
+'use client'
+import React, { useEffect, useState } from 'react';
 import Link from "next/link";
 import Head from 'next/head'
 import { useForm } from "react-hook-form"
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
@@ -21,7 +22,6 @@ const Index = () => {
     } = useForm({
         mode: "onTouched"
     })
-    console.log()
 
     const loginForm = (loginData) => {
         signIn("credentials", {
@@ -143,6 +143,7 @@ const Index = () => {
             </div>
         </>
     );
+
 };
 
 export default Index;

@@ -3,16 +3,15 @@ import React from 'react';
 import Link from "next/link";
 import Head from "next/head";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { objectToArray } from "@/utils";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getSession } from "next-auth/react";
 import { httpClient } from '@/utils/api';
 import { useRouter } from 'next/router';
 
 const Index = () => {
     const router = useRouter()
+
     const {
         register,
         handleSubmit,
@@ -103,7 +102,11 @@ const Index = () => {
                                     id="password"
                                     placeholder="••••••••"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    {...register("password", { required: 'Password is required' })}
+                                    {...register("password", {
+                                        required: 'Password is required',
+                                        minLength: { value: 6, message: "Password must be more than 6 characters" },
+                                        maxLength: { value: 20, message: "Password cannot exceed more than 20 characters" },
+                                    })}
                                 />
                                 <p className={'text-red-400 pl-1 pt-2 text-sm'}>{errors.password?.message}</p>
                             </div>
@@ -123,36 +126,36 @@ const Index = () => {
                                         required: 'Confirm password is required', validate: (value) => {
                                             const { password } = getValues();
                                             return password === value || "Passwords should match!";
-                                        }
+                                        },
                                     })}
                                 />
                                 <p className={'text-red-400 pl-1 pt-2 text-sm'}>{errors.confirm_password?.message}</p>
                             </div>
-                            {/*<div className="flex items-start">*/}
-                            {/*    <div className="flex items-center h-5">*/}
-                            {/*        <input*/}
-                            {/*            id="terms"*/}
-                            {/*            aria-describedby="terms"*/}
-                            {/*            type="checkbox"*/}
-                            {/*            className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"*/}
-                            {/*            required=""*/}
-                            {/*        />*/}
-                            {/*    </div>*/}
-                            {/*    <div className="ml-3 text-sm">*/}
-                            {/*        <label*/}
-                            {/*            htmlFor="terms"*/}
-                            {/*            className="font-light text-gray-500 dark:text-gray-300"*/}
-                            {/*        >*/}
-                            {/*            I accept the{" "}*/}
-                            {/*            <a*/}
-                            {/*                className="font-medium text-primary-600 hover:underline dark:text-primary-500"*/}
-                            {/*                href="#"*/}
-                            {/*            >*/}
-                            {/*                Terms and Conditions*/}
-                            {/*            </a>*/}
-                            {/*        </label>*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
+                            <div className="flex items-start">
+                                <div className="flex items-center h-5">
+                                    <input
+                                        id="terms"
+                                        aria-describedby="terms"
+                                        type="checkbox"
+                                        className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
+
+                                    />
+                                </div>
+                                <div className="ml-3 text-sm">
+                                    <label
+                                        htmlFor="terms"
+                                        className="font-light text-gray-500 dark:text-gray-300"
+                                    >
+                                        I accept the{" "}
+                                        <Link
+                                            className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                                            href="#"
+                                        >
+                                            Terms and Conditions
+                                        </Link>
+                                    </label>
+                                </div>
+                            </div>
                             <button
                                 type="submit"
                                 className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"

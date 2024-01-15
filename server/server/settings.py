@@ -1,8 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
 
-from django.conf import settings
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,7 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Application definition
 
@@ -37,7 +35,7 @@ INSTALLED_APPS = [
     "corsheaders",
 
     # custom app
-    'todo',
+    'todo'
 
 ]
 
@@ -135,6 +133,12 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-  'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-  'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'nahidbabu.info@gmail.com'
+EMAIL_HOST_PASSWORD = 'uzmweksvpasavatg'
+EMAIL_PORT = 587
