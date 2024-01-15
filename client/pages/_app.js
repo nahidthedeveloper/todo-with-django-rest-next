@@ -3,6 +3,8 @@ import { ThemeProvider } from 'next-themes'
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { TokenProvider } from '@/context/tokenContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App({ Component, pageProps: { session, ...pageProps }, }) {
 
@@ -14,7 +16,7 @@ export default function App({ Component, pageProps: { session, ...pageProps }, }
                         <Navbar />
                         <Component {...pageProps} />
                     </TokenProvider>
-
+                    <ToastContainer />
                 </SessionProvider>
             </ThemeProvider>
         </div>

@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import *
 
 urlpatterns = [
@@ -8,4 +9,5 @@ urlpatterns = [
     path('profile/', UserProfile.as_view(), name='user_profile'),
     path('todos/', TodoView.as_view(), name='todo_view'),
     path('todos/<int:todo_id>', TodoSingle.as_view(), name='todo_single'),
+    path('email-verify/', UserEmailVerify.as_view(), name='email_verify'),
 ]

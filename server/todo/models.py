@@ -1,4 +1,3 @@
-# import uuid
 import uuid
 
 from django.contrib.auth.models import AbstractUser
@@ -39,7 +38,6 @@ class Todo(models.Model):
 
 
 class EmailConfirmationModel(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uid = models.CharField(max_length=55)
     created_at = models.DateTimeField(auto_now_add=True)
-    email_confirm_token = models.CharField()
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    email_confirm_token = models.CharField(max_length=255)

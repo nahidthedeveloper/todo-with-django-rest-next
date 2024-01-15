@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -35,12 +39,30 @@ class RegisterUser(CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = CustomUser.objects.create_user(
-                email=serializer.validated_data['email'],
-                password=serializer.validated_data['password']
-            )
-            return Response({'message': 'User registration successfully'})
+            serializer.save()
+            return Response({'message': 'Please confirm your email address to complete the registration'})
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserEmailVerify(CreateAPIView):
+    serializer_class = EmailVerifySerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid(raise_exception=True):
+            user_id = force_str(urlsafe_base64_decode(serializer.data['uid']))
+            
+            user = CustomUser.objects.get(pk=user_id)
+            user.is_active = True
+            user.save()
+            
+            email_user = EmailConfirmationModel.objects.get(pk=user_id)
+            email_user.delete()
+            
+            return Response({'message': 'Your account has been activated successfully.'}, status=status.HTTP_200_OK)
+        return Response({'non_field_errors': ['Activation link is invalid!']},  status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginUser(CreateAPIView):
@@ -50,6 +72,7 @@ class LoginUser(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = CustomUser.objects.get(email=serializer.data['email'])
+            user.last_login = datetime.now()
             user.save()
             refresh = RefreshToken.for_user(user)
             token = {
