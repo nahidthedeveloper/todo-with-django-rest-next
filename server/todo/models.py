@@ -41,3 +41,5 @@ class EmailConfirmationModel(models.Model):
     uid = models.CharField(max_length=55)
     created_at = models.DateTimeField(auto_now_add=True)
     email_confirm_token = models.CharField(max_length=255)
+
+# test commit
