@@ -50,7 +50,7 @@ const Index = ({ uid, token }) => {
           setLoading(false);
         });
     } else {
-      toast.error("Invalid account activationi URL!");
+      toast.error("Invalid account activation URL!");
       router.push("/login");
     }
   }, []);

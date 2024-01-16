@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -47,22 +45,23 @@ class RegisterUser(CreateAPIView):
 
 class UserEmailVerify(CreateAPIView):
     serializer_class = EmailVerifySerializer
-    
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        
+
         if serializer.is_valid(raise_exception=True):
             user_id = force_str(urlsafe_base64_decode(serializer.data['uid']))
-            
+
             user = CustomUser.objects.get(pk=user_id)
             user.is_active = True
             user.save()
-            
-            email_user = EmailConfirmationModel.objects.get(pk=user_id)
-            email_user.delete()
-            
+
+            get_user_data = EmailConfirmationModel.objects.filter(uid=serializer.data['uid'])
+            get_user_data.delete()
+
             return Response({'message': 'Your account has been activated successfully.'}, status=status.HTTP_200_OK)
-        return Response({'non_field_errors': ['Activation link is invalid!']},  status=status.HTTP_400_BAD_REQUEST)
+        return Response({'non_field_errors': ['Activation link is invalid!']},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LoginUser(CreateAPIView):
