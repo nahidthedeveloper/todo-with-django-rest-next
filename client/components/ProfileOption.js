@@ -1,10 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
-import Link from "next/link";
-import {signOut} from "next-auth/react";
+import React, { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
-const ProfileOption = ({user}) => {
+const ProfileOption = ({ user }) => {
     const [isOpen, setIsOpen] = useState(false)
-    let menuRef = useRef();
+    let menuRef = useRef()
 
     let handleClickOutside = (e) => {
         console.log('outside')
@@ -14,14 +14,15 @@ const ProfileOption = ({user}) => {
     }
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleClickOutside)
+        document.addEventListener('mousedown', handleClickOutside)
 
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside)
+            document.removeEventListener('mousedown', handleClickOutside)
         }
-    });
+    })
 
-    return (<div className="relative">
+    return (
+        <div className="relative">
             <div ref={menuRef}>
                 <button
                     type="button"
@@ -36,15 +37,13 @@ const ProfileOption = ({user}) => {
                     />
                 </button>
 
-
                 <div
-
                     className={`${isOpen ? '' : 'hidden'} absolute top-6 right-0 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600`}
                 >
                     <div className="px-4 py-3">
-                    <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
-                        {user}
-                    </span>
+                        <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
+                            {user}
+                        </span>
                     </div>
                     <ul className="py-2">
                         <li>
@@ -65,7 +64,8 @@ const ProfileOption = ({user}) => {
                     </ul>
                 </div>
             </div>
-        </div>);
-};
+        </div>
+    )
+}
 
-export default ProfileOption;
+export default ProfileOption

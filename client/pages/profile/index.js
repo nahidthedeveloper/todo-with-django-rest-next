@@ -1,8 +1,8 @@
 'use client'
-import React, { useContext, useEffect, useState } from 'react';
-import Head from "next/head";
-import { httpClient } from '@/utils/api';
-import { TokenContext } from '@/context/tokenContext';
+import React, { useContext, useEffect, useState } from 'react'
+import Head from 'next/head'
+import { httpClient } from '@/utils/api'
+import { TokenContext } from '@/context/tokenContext'
 
 const Index = () => {
     const tokenStatus = useContext(TokenContext)
@@ -11,11 +11,13 @@ const Index = () => {
 
     useEffect(() => {
         if (tokenStatus === 'added') {
-            httpClient.get('/profile/')
-                .then(res => {
-                    setUser(res.data[0]);
-                }).catch(err => {
-                    console.log(err);
+            httpClient
+                .get('/profile/')
+                .then((res) => {
+                    setUser(res.data[0])
+                })
+                .catch((err) => {
+                    console.log(err)
                 })
         }
     }, [tokenStatus])
@@ -25,7 +27,7 @@ const Index = () => {
             <Head>
                 <title>Todo | {user?.email}</title>
             </Head>
-            <div className='w-full flex justify-center pt-20'>
+            <div className="w-full flex justify-center pt-20">
                 {user && (
                     <div>
                         <p>Hi, {user.email}</p>
@@ -35,7 +37,7 @@ const Index = () => {
                 )}
             </div>
         </>
-    );
-};
+    )
+}
 
-export default Index;
+export default Index
