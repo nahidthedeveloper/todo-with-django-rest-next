@@ -8,6 +8,7 @@ class SpecialDocument extends Document {
                 <Head>
                     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
                 </Head>
+
                 <body className="bg-white text-black dark:bg-gray-900 dark:text-white">
                     <Main />
                     <NextScript />

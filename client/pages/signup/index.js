@@ -11,6 +11,11 @@ import {useRouter} from "next/router";
 const Index = () => {
     const router = useRouter();
     const [loader, setLoader] = useState(false)
+    const [isChecked, setIsChecked] = useState(false);
+
+    const handleCheckboxChange = (event) => {
+        setIsChecked(event.target.checked);
+    };
 
 
     const {
@@ -144,9 +149,10 @@ const Index = () => {
                             <div className="flex items-start">
                                 <div className="flex items-center h-5">
                                     <input
-                                        id="terms"
                                         aria-describedby="terms"
                                         type="checkbox"
+                                        checked={isChecked}
+                                        onChange={handleCheckboxChange}
                                         className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"
                                     />
                                 </div>
@@ -166,8 +172,9 @@ const Index = () => {
                                 </div>
                             </div>
                             <button
+                                disabled={!isChecked}
                                 type="submit"
-                                className="w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
+                                className={`w-full text-white bg-indigo-500 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800`}
                             >
                                 {loader ?
                                     <div role="status">

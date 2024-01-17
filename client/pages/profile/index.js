@@ -25,7 +25,7 @@ const Index = () => {
             <Head>
                 <title>Todo | {user?.email}</title>
             </Head>
-            <div className='w-full flex justify-center'>
+            <div className='w-full flex justify-center pt-20'>
                 {user && (
                     <div>
                         <p>Hi, {user.email}</p>
