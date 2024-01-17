@@ -7,7 +7,6 @@ const ProfileOption = ({ user }) => {
     let menuRef = useRef()
 
     let handleClickOutside = (e) => {
-        console.log('outside')
         if (!menuRef.current.contains(e.target)) {
             setIsOpen(false)
         }

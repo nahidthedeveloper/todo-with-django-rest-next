@@ -1,13 +1,14 @@
 'use client'
 import { httpClient } from '@/utils/api'
 import { Button, Modal } from 'flowbite-react'
-import { useState } from 'react'
+import {useEffect, useRef, useState} from 'react'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 function TitleUpdateModal({ id, title, submit, setSubmit }) {
     const [openModal, setOpenModal] = useState(false)
     const [newTitle, setNewTitle] = useState('')
+    let modalRef = useRef()
 
     const handleTitleUpdate = (id, title) => {
         if (newTitle !== '' && title !== newTitle) {
@@ -32,12 +33,32 @@ function TitleUpdateModal({ id, title, submit, setSubmit }) {
         }
     }
 
+    let handleClickOutside = (e) => {
+        if (!modalRef.current?.contains(e.target)) {
+            setOpenModal(false)
+        }
+    }
+
+    useEffect(() => {
+        console.log('test')
+        document.addEventListener('mousedown', handleClickOutside)
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    })
+
     return (
         <>
             <Button onClick={() => setOpenModal(true)} color="purple">
                 Edit
             </Button>
-            <Modal show={openModal} onClose={() => setOpenModal(false)}>
+            <Modal
+                show={openModal}
+                onClose={() => setOpenModal(false)}
+                className={'bg-opacity-90'}
+                ref={modalRef}
+            >
                 <Modal.Header>Update Todo</Modal.Header>
                 <Modal.Body>
                     <input
